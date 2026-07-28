@@ -2,94 +2,113 @@ import { Job } from "../models/Job";
 
 export class JobScorer {
 
-    score(job: Job, resumeSkills: string[]) {
+    private readonly aliases: Record<string, string> = {
+        node: "node.js",
+        js: "javascript",
+        ts: "typescript",
+        postgres: "postgresql",
+        k8s: "kubernetes",
+        llms: "llm",
+        ml: "machine learning"
+    };
 
-        const text =
-            `${job.title}
-             ${job.description}`.toLowerCase();
+    private readonly knownSkills = [
 
-        const matchedSkills: string[] = [];
+        "javascript",
+        "typescript",
+        "node.js",
+        "node",
+        "react",
+        "angular",
+        "vue",
+        "python",
+        "java",
+        "spring",
+        "spring boot",
+        "express",
+        "nestjs",
+        "graphql",
+        "rest",
+        "mongodb",
+        "mysql",
+        "postgresql",
+        "redis",
+        "docker",
+        "kubernetes",
+        "aws",
+        "azure",
+        "gcp",
+        "terraform",
+        "jenkins",
+        "git",
+        "github",
+        "ci/cd",
+        "microservices",
+        "rabbitmq",
+        "kafka",
+        "elasticsearch",
+        "langchain",
+        "langgraph",
+        "openai",
+        "pinecone",
+        "weaviate",
+        "rag",
+        "llm",
+        "machine learning"
+    ];
 
-        const missingSkills: string[] = [];
+    private normalize(skills: string[]): string[] {
 
-        for (const skill of resumeSkills) {
+        return [
+            ...new Set(
+                skills.map(skill => {
 
-            if (text.includes(skill.toLowerCase())) {
+                    const key = skill.toLowerCase();
 
-                matchedSkills.push(skill);
+                    return this.aliases[key] || key;
 
-            }
-
-        }
-
-        const commonJobSkills = [
-
-            "node",
-
-            "node.js",
-
-            "typescript",
-
-            "javascript",
-
-            "react",
-
-            "express",
-
-            "graphql",
-
-            "aws",
-
-            "docker",
-
-            "kubernetes",
-
-            "postgresql",
-
-            "mongodb",
-
-            "redis",
-
-            "langchain",
-
-            "langgraph",
-
-            "openai",
-
-            "rag",
-
-            "llm",
-
-            "terraform"
-
+                })
+            )
         ];
-
-        for (const skill of commonJobSkills) {
-
-            if (
-                text.includes(skill) &&
-                !matchedSkills.includes(skill)
-            ) {
-                missingSkills.push(skill);
-            }
-        }
-
-        const score =
-            Math.min(
-                100,
-                matchedSkills.length * 10
-            );
-
-        return {
-
-            score,
-
-            matchedSkills,
-
-            missingSkills
-
-        };
 
     }
 
+    score(job: Job, resumeSkills: string[]) {
+
+        const text = `
+            ${job.title}
+            ${job.description}
+        `.toLowerCase();
+
+        const jobSkills = this.normalize(
+
+            this.knownSkills.filter(skill =>
+                text.includes(skill.toLowerCase())
+            )
+
+        );
+
+        const resume = this.normalize(resumeSkills);
+
+        const matchedSkills = jobSkills.filter(skill =>
+            resume.includes(skill)
+        );
+
+        const missingSkills = jobSkills.filter(skill =>
+            !resume.includes(skill)
+        );
+
+        const score =
+            jobSkills.length === 0
+                ? 0
+                : Math.round(
+                    (matchedSkills.length / jobSkills.length) * 100
+                );
+
+        return {
+            score,
+            matchedSkills,
+            missingSkills
+        };
+    }
 }

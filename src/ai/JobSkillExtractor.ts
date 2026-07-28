@@ -1,57 +1,47 @@
-const KNOWN_SKILLS = [
-    "javascript",
-    "typescript",
-    "node.js",
-    "node",
-    "react",
-    "angular",
-    "vue",
-    "python",
-    "java",
-    "spring",
-    "spring boot",
-    "express",
-    "nestjs",
-    "graphql",
-    "rest",
-    "mongodb",
-    "mysql",
-    "postgresql",
-    "redis",
-    "docker",
-    "kubernetes",
-    "aws",
-    "azure",
-    "gcp",
-    "terraform",
-    "jenkins",
-    "git",
-    "github",
-    "ci/cd",
-    "microservices",
-    "rabbitmq",
-    "kafka",
-    "elasticsearch",
-    "langchain",
-    "langgraph",
-    "openai",
-    "pinecone",
-    "weaviate",
-    "rag",
-    "llm",
-    "ai",
-    "machine learning"
-];
+
+import { SkillNormalizer } from "./SkillNormalizer";
+import { SKILL_PATTERNS } from "./SkillPatterns";
 
 export class JobSkillExtractor {
 
+    private normalizer = new SkillNormalizer();
+
     extract(text: string): string[] {
 
-        const lower = text.toLowerCase();
+        const cleanText = text
+            .replace(/<[^>]*>/g, " ")
+            .replace(/&nbsp;/gi, " ")
+            .replace(/&amp;/gi, "&")
+            .replace(/&lt;/gi, "<")
+            .replace(/&gt;/gi, ">")
+            .replace(/\s+/g, " ")
+            .toLowerCase();
 
-        return KNOWN_SKILLS.filter(skill =>
-            lower.includes(skill)
+        const found: string[] = [];
+
+        for (const item of SKILL_PATTERNS) {
+
+    for (const pattern of item.patterns) {
+
+        const escaped = pattern.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
         );
-    }
 
+        const regex = new RegExp(
+            `\\b${escaped}\\b`,
+            "i"
+        );
+
+        if (regex.test(cleanText)) {
+
+            found.push(item.skill);
+
+            break;
+        }
+    }
+}
+
+        return this.normalizer.normalize(found);
+    }
 }

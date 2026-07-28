@@ -1,37 +1,102 @@
-const aliases: Record<string,string> = {
+export class SkillNormalizer {
 
-    node:"node.js",
+    private aliases: Record<string, string> = {
 
-    js:"javascript",
+        // JavaScript
+        "js": "javascript",
 
-    ts:"typescript",
+        // TypeScript
+        "ts": "typescript",
 
-    postgres:"postgresql",
+        // Node
+        "node": "node.js",
+        "nodejs": "node.js",
 
-    k8s:"kubernetes",
+        // Go
+        "golang": "go",
 
-    ml:"machine learning",
+        // PostgreSQL
+        "postgres": "postgresql",
+        "postgresql": "postgresql",
 
-    llms:"llm",
+        // Kubernetes
+        "k8s": "kubernetes",
+        "kube": "kubernetes",
 
-    awscloud:"aws"
-};
+        // GraphQL
+        "graph ql": "graphql",
 
-export class SkillNormalizer{
+        // REST
+        "restful": "rest",
 
-    normalize(skills:string[]):string[]{
+        // AWS
+        "amazon web services": "aws",
 
-        return [...new Set(
+        // Azure
+        "microsoft azure": "azure",
 
-            skills.map(skill=>{
+        // GCP
+        "google cloud": "gcp",
+        "google cloud platform": "gcp",
 
-                const key=skill.toLowerCase();
+        // Terraform
+        "tf": "terraform",
 
-                return aliases[key] || key;
+        // GitHub Actions
+        "githubactions": "github actions",
+        "gh actions": "github actions",
 
-            })
+        // CI/CD
+        "continuous integration": "ci/cd",
+        "continuous delivery": "ci/cd",
+        "continuous deployment": "ci/cd",
 
-        )];
+        // OAuth
+        "oauth2": "oauth",
+
+        // Microservices
+        "microservice": "microservices",
+
+        // Event Driven
+        "event-driven": "event driven",
+
+        // LLM
+        "llms": "llm",
+        "large language models": "llm",
+
+        // RAG
+        "retrieval augmented generation": "rag",
+
+        // LangChain
+        "lang chain": "langchain",
+
+        // LangGraph
+        "lang graph": "langgraph",
+
+        // ElasticSearch
+        "elastic search": "elasticsearch",
+
+        // C#
+        "csharp": "c#",
+
+        // C++
+        "cpp": "c++",
+
+        // JWT
+        "json web token": "jwt"
+    };
+
+    normalize(skills: string[]): string[] {
+
+        const normalized = skills.map(skill => {
+
+            const key = skill.trim().toLowerCase();
+
+            return this.aliases[key] ?? key;
+
+        });
+
+        return [...new Set(normalized)];
 
     }
 

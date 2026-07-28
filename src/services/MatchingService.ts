@@ -1,27 +1,30 @@
 import { JobSkillExtractor } from "../ai/JobSkillExtractor";
 import { JobMatcher } from "../ai/JobMatcher";
 
-export class MatchingService{
+export class MatchingService {
 
-    private extractor=new JobSkillExtractor();
+    private extractor = new JobSkillExtractor();
 
-    private matcher=new JobMatcher();
+    private matcher = new JobMatcher();
 
-    match(job,resumeSkills){
+    match(job: any, resumeSkills: string[]) {
 
-        const jobSkills=this.extractor.extract(
+        const jobText = `
+${job.title ?? ""}
 
-            `${job.title}
-             ${job.description}`
+${job.content ?? job.description ?? ""}
+`;
 
-        );
+        const jobSkills = this.extractor.extract(jobText);
+
+        // Debug (remove after testing)
+        console.log("========================================");
+        console.log(job.title);
+        console.log("Extracted Skills:", jobSkills);
 
         return this.matcher.score(
-
             resumeSkills,
-
             jobSkills
-
         );
 
     }

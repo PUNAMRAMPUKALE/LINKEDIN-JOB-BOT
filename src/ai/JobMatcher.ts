@@ -5,31 +5,40 @@ export class JobMatcher {
     private normalizer = new SkillNormalizer();
 
     score(
-        resumeSkills:string[],
-        jobSkills:string[]
-    ){
+        resumeSkills: string[],
+        jobSkills: string[]
+    ) {
 
-        const resume=this.normalizer.normalize(resumeSkills);
+        const resume = [
+            ...new Set(
+                this.normalizer.normalize(resumeSkills)
+            )
+        ];
 
-        const job=this.normalizer.normalize(jobSkills);
+        const job = [
+            ...new Set(
+                this.normalizer.normalize(jobSkills)
+            )
+        ];
 
-        const matched=job.filter(skill=>resume.includes(skill));
+        const matched = job.filter(
+            skill => resume.includes(skill)
+        );
 
-        const missing=job.filter(skill=>!resume.includes(skill));
+        const missing = job.filter(
+            skill => !resume.includes(skill)
+        );
 
-        const score=job.length
-            ?Math.round(
-                matched.length/job.length*100
-             )
-            :0;
+        const score = job.length > 0
+            ? Math.round((matched.length / job.length) * 100)
+            : 0;
 
-        return{
-
+        return {
             score,
-
-            matchedSkills:matched,
-
-            missingSkills:missing
+            matchedSkills: matched,
+            missingSkills: missing,
+            totalJobSkills: job.length,
+            matchedCount: matched.length
         };
 
     }

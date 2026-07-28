@@ -5,30 +5,35 @@ export class GreenhouseParser {
   parse(rawJobs: any[], company: string): Job[] {
 
     return rawJobs.map(job => ({
-      title: job.title,
 
-      company,
+    title: job.title,
 
-      location: job.location?.name ?? "Unknown",
+    company,
 
-      description: "",
+    location: job.location?.name ?? "Unknown",
 
-      url: job.absolute_url,
+    description:
+        job.content ??
+        job.description ??
+        "",
 
-      source: "Greenhouse",
+    url: job.absolute_url,
 
-      postedDate: "",
+    source: "Greenhouse",
 
-      employmentType: "",
+    postedDate: "",
 
-      salary: "",
+    employmentType: "",
 
-      score: 0,
+    salary: "",
 
-      matchedSkills: [],
+    score: 0,
 
-      scrapedAt: new Date().toISOString()
-    }));
+    matchedSkills: [],
+
+    scrapedAt: new Date().toISOString()
+
+}));
 
   }
 
